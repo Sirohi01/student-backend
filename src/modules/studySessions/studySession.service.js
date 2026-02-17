@@ -1,4 +1,5 @@
 const revisionService = require('../revision/revision.service');
+const achievementService = require('../achievements/achievement.service');
 const StudySession = require('./studySession.model');
 const AppError = require('../../utils/AppError');
 
@@ -9,11 +10,36 @@ exports.logSession = async (userId, data) => {
     });
 
     // Automatically schedule revision tasks
-    // Use setImmediate or process.nextTick to avoid blocking the response
     setImmediate(() => {
         revisionService.scheduleRevision(session._id).catch(err => {
             console.error('Failed to schedule revision:', err);
         });
+    });
+
+    // Update streak and check achievements
+    setImmediate(() => {
+        achievementService.updateStreak(userId, data.duration).catch(err => {
+            console.error('Failed to update streak:', err);
+        });
+
+        // Check for perfect focus achievement
+        if (data.focusScore === 100) {
+            achievementService.checkAndAwardAchievement(userId, 'perfect_focus').catch(err => {
+                console.error('Failed to award achievement:', err);
+            });
+        }
+
+        // Check for early bird/night owl
+        const hour = new Date(data.startTime).getHours();
+        if (hour < 6) {
+            achievementService.checkAndAwardAchievement(userId, 'early_bird').catch(err => {
+                console.error('Failed to award achievement:', err);
+            });
+        } else if (hour >= 23) {
+            achievementService.checkAndAwardAchievement(userId, 'night_owl').catch(err => {
+                console.error('Failed to award achievement:', err);
+            });
+        }
     });
 
     return session;

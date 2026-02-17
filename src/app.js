@@ -65,6 +65,8 @@ app.use('/api/v1/ai', aiRouter);
 app.use('/api/v1/subjects', subjectRouter);
 app.use('/api/v1/tasks', taskRouter);
 app.use('/api/v1/sessions', sessionRouter);
+app.use('/api/v1/flashcards', require('./modules/flashcards/flashcard.route'));
+app.use('/api/v1/achievements', require('./modules/achievements/achievement.route'));
 
 app.use((req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

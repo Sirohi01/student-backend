@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user',
     },
+    openaiApiKey: {
+        type: String,
+        select: false, // Don't return by default for security
+    },
     createdAt: {
         type: Date,
         default: Date.now,

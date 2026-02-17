@@ -56,3 +56,21 @@ exports.getMe = asyncHandler(async (req, res, next) => {
         },
     });
 });
+
+exports.updateApiKey = asyncHandler(async (req, res, next) => {
+    const { openaiApiKey } = req.body;
+
+    if (!openaiApiKey) {
+        return sendResponse(res, 400, false, 'Please provide an API key');
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { openaiApiKey },
+        { new: true, runValidators: true }
+    );
+
+    sendResponse(res, 200, true, 'API key updated successfully', {
+        message: 'Your OpenAI API key has been saved securely'
+    });
+});

@@ -10,5 +10,6 @@ router.post('/register', (req, res, next) => {
 });
 router.post('/login', authController.login);
 router.get('/me', protect, authController.getMe);
+router.post('/update-api-key', protect, authController.updateApiKey);
 
 module.exports = router;
